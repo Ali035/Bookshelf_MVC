@@ -1,25 +1,42 @@
 ﻿@model Category
 
+@{
+    var isDeleteMode = ViewData["ActionMode"]?.ToString() == "Delete";
+    var isCreateMode = ViewData["ActionMode"]?.ToString() == "Create";
+    var submitClass = isDeleteMode ? "btn-danger" : "btn-primary";
+}
+
 <form method="post">
     <div class="border p-3 mt-4">
         <div class="row pb-2">
-            <h2 >Create Category</h2>
+            <h2 >@ViewData["ActionMode"] Category</h2>
             <hr />
         </div>
+        <div asp-validation-summary="All" ></div>
+        @if (!isCreateMode)
+        {
+            <input asp-for="Id" hidden />
+        }        
         <div class="mb-3 row p-1">
             <label asp-for="Name" class="p-0">Category Name</label>
-            <input asp-for="Name" type="text" class="form-control" />
-            <span asp-validation-for="Name" class="text-danger" > </span>
+            <input asp-for="Name" type="text" disabled=@isDeleteMode class="form-control" />
+            @if (!isDeleteMode)
+            {
+            <span asp-validation-for="Name" class="text-danger"> </span>
+            }
         </div>
         <div class="mb-3 row p-1">
             <label asp-for="DisplayOrder" class="p-0">Display Order</label>
-            <input asp-for="DisplayOrder" class="form-control" />
-            <span asp-validation-for="DisplayOrder" class="text-danger"> </span>
+            <input asp-for="DisplayOrder" disabled=@isDeleteMode class="form-control" />
+            @if (!isDeleteMode)
+            {
+                <span asp-validation-for="DisplayOrder" class="text-danger"> </span>
+            }
         </div>
 
         <div class="row">
             <div class="col-6 col-md-3">
-                <button type="submit" class="btn btn-primary form-control">Create</button>
+                <button type="submit" class="btn @submitClass form-control">@ViewData["ActionMode"]</button>
             </div>
             <div class="col-6 col-md-3">
                 <a asp-controller="Category" asp-action="Index" class="btn btn-outline-dark form-control">
