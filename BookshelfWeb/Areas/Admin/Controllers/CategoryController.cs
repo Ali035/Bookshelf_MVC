@@ -2,8 +2,9 @@
 using Bookshelf.Models;
 using Microsoft.AspNetCore.Mvc;
 
-namespace BookshelfWeb.Controllers
+namespace BookshelfWeb.Areas.Admin.Controllers
 {
+    [Area("Admin")]
     public class CategoryController : Controller
     {
         private readonly IUnitOfWork _unitOfWork;
