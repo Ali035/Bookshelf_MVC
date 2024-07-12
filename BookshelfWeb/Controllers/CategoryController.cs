@@ -1,22 +1,26 @@
-﻿using Bookshelf.Models;
-using BookshelfWeb.Controllers.Data;
+﻿using Bookshelf.DataAccess.Repository.IRepositury;
+using Bookshelf.Models;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace BookshelfWeb.Controllers
 {
-    public class CategoryController(ApplicationDBContext dbContext) : Controller
+    public class CategoryController : Controller
     {
-        private readonly ApplicationDBContext _dbContext = dbContext;
+        private readonly IUnitOfWork _unitOfWork;
+
+        public CategoryController(IUnitOfWork unitOfWork)
+        {
+            _unitOfWork = unitOfWork;
+        }
 
         // Try not to use nested types unless there's a clear benefit.
         public enum ActionModeEnum { Create, Update, Delete }
         [ViewData]
         public ActionModeEnum ActionMode { get; set; } = ActionModeEnum.Create;
 
-        public async Task<IActionResult> Index()
+        public IActionResult Index()
         {
-            List<Category> objCategoryList = await _dbContext.Categories.ToListAsync();
+            IEnumerable<Category> objCategoryList = _unitOfWork.Categories.GetAll();
             return View(objCategoryList);
         }
 
@@ -26,13 +30,13 @@ namespace BookshelfWeb.Controllers
             return View("Create");
         }
         [HttpPost]
-        public async Task<IActionResult> Create(Category category)
+        public IActionResult Create(Category category)
         {
             ActionMode = ActionModeEnum.Create;
             if (ModelState.IsValid)
             {
-                _dbContext.Categories.Add(category);
-                await _dbContext.SaveChangesAsync();
+                _unitOfWork.Categories.Add(category);
+                _unitOfWork.Save();
 
                 TempData["success"] = "Category created successfully";
                 return RedirectToAction("Index");
@@ -46,7 +50,7 @@ namespace BookshelfWeb.Controllers
             {
                 return NotFound();
             }
-            Category? category = _dbContext.Categories.FirstOrDefault(c => c.Id == id);
+            Category? category = _unitOfWork.Categories.Get(id);
             if (category == null)
             {
                 return NotFound();
@@ -56,13 +60,13 @@ namespace BookshelfWeb.Controllers
             return View("Create", category);
         }
         [HttpPost]
-        public async Task<IActionResult> Edit(Category category)
+        public IActionResult Edit(Category category)
         {
             ActionMode = ActionModeEnum.Update;
             if (ModelState.IsValid)
             {
-                _dbContext.Categories.Update(category);
-                await _dbContext.SaveChangesAsync();
+                _unitOfWork.Categories.Update(category);
+                _unitOfWork.Save();
 
                 TempData["success"] = "Category updated successfully";
                 return RedirectToAction("Index");
@@ -76,7 +80,7 @@ namespace BookshelfWeb.Controllers
             {
                 return NotFound();
             }
-            Category? category = _dbContext.Categories.FirstOrDefault(c => c.Id == id);
+            Category? category = _unitOfWork.Categories.Get(id);
             if (category == null)
             {
                 return NotFound();
@@ -86,14 +90,14 @@ namespace BookshelfWeb.Controllers
             return View("Create", category);
         }
         [HttpPost, ActionName("Delete")]
-        public async Task<IActionResult> DeletePost(int? id)
+        public IActionResult DeletePost(int? id)
         {
             if (id == null) return NotFound();
-            Category? category = _dbContext.Categories.FirstOrDefault(c => c.Id == id);
+            Category? category = _unitOfWork.Categories.Get(id);
             if (category == null) return NotFound();
 
-            _dbContext.Categories.Remove(category);
-            await _dbContext.SaveChangesAsync();
+            _unitOfWork.Categories.Remove(category);
+            _unitOfWork.Save();
 
             TempData["success"] = "Category updated successfully";
             return RedirectToAction("Index");
