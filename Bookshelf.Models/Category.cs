@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace BookshelfWeb.Models
+namespace Bookshelf.Models
 {
     public class Category
     {
@@ -9,7 +9,8 @@ namespace BookshelfWeb.Models
         [Required]
         [MaxLength(30)]
         public required string Name { get; set; }
+        [Required]
         [Range(0, 100)]
-        public int? DisplayOrder { get; set; }
+        public int DisplayOrder { get; set; }
     }
 }

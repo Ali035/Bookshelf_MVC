@@ -1,4 +1,4 @@
-﻿using BookshelfWeb.Models;
+﻿using Bookshelf.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace BookshelfWeb.Controllers.Data

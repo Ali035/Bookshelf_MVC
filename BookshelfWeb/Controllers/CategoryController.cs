@@ -1,5 +1,5 @@
-﻿using BookshelfWeb.Controllers.Data;
-using BookshelfWeb.Models;
+﻿using Bookshelf.Models;
+using BookshelfWeb.Controllers.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
