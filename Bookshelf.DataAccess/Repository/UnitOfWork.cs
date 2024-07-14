@@ -7,10 +7,12 @@ namespace Bookshelf.DataAccess.Repository
     {
         private readonly ApplicationDBContext _dbContext;
         public ICategoryRepository Categories { get; private set; }
+        public IProductRepository Product { get; private set; }
         public UnitOfWork(ApplicationDBContext dBContext)
         {
             _dbContext = dBContext;
             Categories = new CategoryRepository(dBContext);
+            Product = new ProductRepository(dBContext);
         }
 
         public void Save()

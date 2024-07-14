@@ -42,9 +42,13 @@ namespace Bookshelf.DataAccess.Repository
             return query.FirstOrDefault();
         }
 
-        public IEnumerable<TEntity> GetAll()
+        public IEnumerable<TEntity> GetAll(string[]? includeParams)
         {
             IQueryable<TEntity> query = _dbSet;
+            if (includeParams != null && includeParams.Length > 0)
+            {
+                query = includeParams.Aggregate(query, (current, include) => current.Include(include));
+            }
             return query.ToList();
         }
 

@@ -4,7 +4,7 @@ namespace Bookshelf.DataAccess.Repository.IRepositury
 {
     public interface IRepository<TEntity> where TEntity : class
     {
-        IEnumerable<TEntity> GetAll();
+        IEnumerable<TEntity> GetAll(string[]? includeParams = null);
         TEntity? Get(object id);
         TEntity? Get(Expression<Func<TEntity, bool>> filter);
         void Add(TEntity entity);
