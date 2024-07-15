@@ -15,6 +15,12 @@ namespace BookshelfWeb.Areas.Admin.Controllers
 
         public IActionResult Index()
         {
+            return View();
+        }
+
+        [HttpGet]
+        public IActionResult GetAll()
+        {
             IEnumerable<Product> products = _unitOfWork.Product.GetAll(
                 [nameof(Product.Category)]).ToList();
             return Json(products);
