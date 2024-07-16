@@ -3,7 +3,6 @@ using Bookshelf.Models;
 using Bookshelf.Models.ViewModel;
 using Bookshelf.Utility;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace BookshelfWeb.Areas.Admin.Controllers
 {
@@ -25,7 +24,11 @@ namespace BookshelfWeb.Areas.Admin.Controllers
         public IActionResult Create()
         {
             ProductVM productVM =
-                new() { Product = new Product(), CategoryList = GetCategoryList() };
+                new()
+                {
+                    Product = new Product(),
+                    CategoryList = UnitOfWork.Categories.GetCategoryList()
+                };
             return View(productVM);
         }
 
@@ -40,7 +43,12 @@ namespace BookshelfWeb.Areas.Admin.Controllers
             {
                 return NotFound();
             }
-            ProductVM productVM = new() { Product = product, CategoryList = GetCategoryList(), };
+            ProductVM productVM =
+                new()
+                {
+                    Product = product,
+                    CategoryList = UnitOfWork.Categories.GetCategoryList(),
+                };
             ActionMode = ActionModeEnum.Update;
             return View("Create", productVM);
         }
@@ -54,17 +62,13 @@ namespace BookshelfWeb.Areas.Admin.Controllers
                 {
                     FilePath filePath =
                         new(WebHostEnvironment.WebRootPath, nameof(Product), file.FileName);
+
                     if (!string.IsNullOrEmpty(productVM.Product.ImageUrl))
                     {
-                        string oldImagePath = Path.Combine(
-                            filePath.WebRootPath,
-                            productVM.Product.ImageUrl.TrimStart('\\')
-                        );
-                        if (System.IO.File.Exists(oldImagePath))
-                        {
-                            System.IO.File.Delete(oldImagePath);
-                        }
+                        FileManager fileManager = new(WebHostEnvironment.WebRootPath);
+                        fileManager.RemoveFileIfExists(productVM.Product.ImageUrl);
                     }
+
                     using var fs = new FileStream(filePath.FileStreamPath, FileMode.Create);
                     file.CopyTo(fs);
                     productVM.Product.ImageUrl = filePath.Url;
@@ -74,7 +78,7 @@ namespace BookshelfWeb.Areas.Admin.Controllers
                 TempData["success"] = "Product updated successfully";
                 return View("Index");
             }
-            productVM.CategoryList = GetCategoryList();
+            productVM.CategoryList = UnitOfWork.Categories.GetCategoryList();
             ActionMode = ActionModeEnum.Update;
             return View("Create", productVM);
         }
@@ -97,9 +101,33 @@ namespace BookshelfWeb.Areas.Admin.Controllers
                 TempData["success"] = "Product created successfully";
                 return View("Index");
             }
-            productVM.CategoryList = GetCategoryList();
+            productVM.CategoryList = UnitOfWork.Categories.GetCategoryList();
             return View(productVM);
         }
+
+        [HttpDelete]
+        public IActionResult Delete(int? id)
+        {
+            if (id == null || id == 0)
+            {
+                return Json(new { success = false, message = "Product Not Found!" });
+            }
+            Product? product = UnitOfWork.Product.Get(id);
+            if (product == null)
+            {
+                return Json(new ResultMessage(true, "Product Not Found!"));
+            }
+            FileManager fileManager = new(WebHostEnvironment.WebRootPath);
+            if (product.ImageUrl != null || product.ImageUrl != null)
+            {
+                fileManager.RemoveFileIfExists(product.ImageUrl);
+            }
+            UnitOfWork.Product.Remove(product);
+            UnitOfWork.Save();
+            return Json(new ResultMessage(true, "Product deleted successfully."));
+        }
+
+        #region API Calls
 
         [HttpGet]
         public IActionResult GetAll()
@@ -110,11 +138,6 @@ namespace BookshelfWeb.Areas.Admin.Controllers
             return Json(products);
         }
 
-        private IEnumerable<SelectListItem> GetCategoryList()
-        {
-            return UnitOfWork
-                .Categories.GetAll()
-                .Select(c => new SelectListItem { Text = c.Name, Value = c.Id.ToString() });
-        }
+        #endregion
     }
 }

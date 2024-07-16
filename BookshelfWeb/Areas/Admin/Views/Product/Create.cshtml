@@ -2,10 +2,11 @@
 
 @{
     var isCreateMode = ViewData["ActionMode"]?.ToString() == "Create";
+    bool hasImageUrl = !string.IsNullOrEmpty(@Model.Product.ImageUrl);
 }
 
 <form method="post" enctype="multipart/form-data">
-    <div class="border p-3 mt-4 row">
+    <div class="p-3 mt-4 row">
         <div class="row pb-2">
             <h2>@ViewData["ActionMode"] Product</h2>
             <hr />
@@ -14,58 +15,58 @@
         @if (!isCreateMode)
         {
             <input asp-for="@Model.Product.Id" hidden />
-            <input asp-for="\@Model.Product.ImageUrl" hidden />
+            <input asp-for="@Model.Product.ImageUrl" hidden />
         }
-        <div class="col-10 border">
+        <div class="col-10 border p-5">
             <div class="mb-3 row p-1">
-                <label asp-for="@Model.Product.Title" class="p-0">Title</label>
+                <label class="pb-2 px-0" asp-for="@Model.Product.Title">Title</label>
                 <input asp-for="@Model.Product.Title" type="text" class="form-control" />
                 <span asp-validation-for="@Model.Product.Title" class="text-danger"> </span>
             </div>
             <div class="mb-3 row p-1">
-                <label asp-for="@Model.Product.Description" class="p-0">Description</label>
-                <input asp-for="@Model.Product.Description" class="form-control" />
+                <label class="pb-2 px-0" asp-for="@Model.Product.Description">Description</label>
+                <textarea asp-for="@Model.Product.Description" rows="5" class="form-control" ></textarea>
                 <span asp-validation-for="@Model.Product.Description" class="text-danger"> </span>
             </div>
             <div class="mb-3 row p-1">
-                <label asp-for="@Model.Product.ISBN" class="p-0">ISBN</label>
+                <label class="pb-2 px-0" asp-for="@Model.Product.ISBN">ISBN</label>
                 <input asp-for="@Model.Product.ISBN" class="form-control" />
                 <span asp-validation-for="@Model.Product.ISBN" class="text-danger"> </span>
             </div>
             <div class="mb-3 row p-1">
-                <label asp-for="@Model.Product.Author" class="p-0">Author</label>
+                <label class="pb-2 px-0" asp-for="@Model.Product.Author">Author</label>
                 <input asp-for="@Model.Product.Author" class="form-control" />
                 <span asp-validation-for="@Model.Product.Author" class="text-danger"> </span>
             </div>
             <div class="mb-3 row p-1">
-                <label asp-for="@Model.Product.ListPrice" class="p-0">ListPrice</label>
+                <label class="pb-2 px-0" asp-for="@Model.Product.ListPrice">ListPrice</label>
                 <input asp-for="@Model.Product.ListPrice" class="form-control" />
                 <span asp-validation-for="@Model.Product.ListPrice" class="text-danger"> </span>
             </div>
             <div class="mb-3 row p-1">
-                <label asp-for="@Model.Product.Price" class="p-0"></label>
+                <label class="pb-2 px-0" asp-for="@Model.Product.Price"></label>
                 <input asp-for="@Model.Product.Price" class="form-control" />
                 <span asp-validation-for="@Model.Product.Price" class="text-danger"> </span>
             </div>
             <div class="mb-3 row p-1">
-                <label asp-for="@Model.Product.Price50" class="p-0"></label>
+                <label class="pb-2 px-0" asp-for="@Model.Product.Price50"></label>
                 <input asp-for="@Model.Product.Price50" class="form-control" />
                 <span asp-validation-for="@Model.Product.Price50" class="text-danger"> </span>
             </div>
             <div class="mb-3 row p-1">
-                <label asp-for="@Model.Product.Price100" class="p-0"></label>
+                <label class="pb-2 px-0" asp-for="@Model.Product.Price100"></label>
                 <input asp-for="@Model.Product.Price100" class="form-control" />
                 <span asp-validation-for="@Model.Product.Price100" class="text-danger"> </span>
             </div>
             <div class="mb-3 row p-1">
-                <label asp-for="@Model.Product.CategoryId" class="p-0"></label>
+                <label class="pb-2 px-0" asp-for="@Model.Product.CategoryId"></label>
                 <select asp-for="@Model.Product.CategoryId" asp-items="@Model.CategoryList" class="form-select">
                     <option disabled selected>--Select Category</option>
                 </select>
                 <span asp-validation-for="@Model.Product.CategoryId" class="text-danger"> </span>
             </div>
             <div class="mb-3 row p-1">
-                <label asp-for="@Model.Product.ImageUrl" class="p-0"></label>
+                <label class="pb-2 px-0" asp-for="@Model.Product.ImageUrl"></label>
                 <input type="file" name="file" class="form-control" />
                 <span asp-validation-for="@Model.Product.ImageUrl" class="text-danger"> </span>
             </div>
@@ -81,9 +82,16 @@
             </div>
         </div>
         <div class="col-2 px-2">
-            <div class="rounded-2">
-                <img src="@Model.Product.ImageUrl" width="100%" />
-            </div>
+            @if(hasImageUrl){
+                <div class="rounded-2">
+                    <img src="@Model.Product.ImageUrl" width="100%" />
+                </div>
+                <a download href="@Model.Product.ImageUrl">Download your image</a>
+            }
+            else{
+                <span>No Image!</span>
+            }
+            
         </div>
     </div>
 </form>

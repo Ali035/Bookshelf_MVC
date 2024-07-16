@@ -1,8 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
 namespace Bookshelf.Utility
 {
     public enum ActionModeEnum
@@ -10,6 +5,12 @@ namespace Bookshelf.Utility
         Create,
         Update,
         Delete
+    }
+
+    public class ResultMessage(bool success, string message)
+    {
+        public bool Success { get; set; } = success;
+        public string Message { get; set; } = message;
     }
 
     public class FilePath
@@ -27,6 +28,20 @@ namespace Bookshelf.Utility
             NewFileName = Guid.NewGuid().ToString() + Path.GetExtension(fileName);
             Url = @$"\images\{EntityName}\{NewFileName}";
             FileStreamPath = Path.Combine(WebRootPath, Url.TrimStart('\\'));
+        }
+    }
+
+    public class FileManager(string webRootPath)
+    {
+        public string WebRootPath { get; set; } = webRootPath;
+
+        public void RemoveFileIfExists(string filePath)
+        {
+            string oldImagePath = Path.Combine(WebRootPath, filePath.TrimStart('\\'));
+            if (File.Exists(oldImagePath))
+            {
+                File.Delete(oldImagePath);
+            }
         }
     }
 }

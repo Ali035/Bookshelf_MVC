@@ -50,7 +50,7 @@ namespace Bookshelf.DataAccess.Repository
             return query.FirstOrDefault();
         }
 
-        public IEnumerable<TEntity> GetAll(string[]? includeParams)
+        public IEnumerable<TEntity> GetAll(string[]? includeParams = null)
         {
             IQueryable<TEntity> query = _dbSet;
             if (includeParams != null && includeParams.Length > 0)

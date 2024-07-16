@@ -1,21 +1,61 @@
-﻿$(function () {
-  loadProductData();
-});
+﻿// Grid API: Access to Grid API methods
+let gridApi;
 
-function loadProductData() {
-  let data = $.ajax({
-    url: "/admin/product/getAll/",
-    success: onSuccess,
+function deleteProduct(url) {
+  Swal.fire({
+    title: "Are you sure?",
+    text: "You won't be able to revert this!",
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonColor: "#3085d6",
+    cancelButtonColor: "#d33",
+    confirmButtonText: "Yes, delete it!",
+  }).then((result) => {
+    if (result.isConfirmed) {
+      $.ajax({
+        url: url,
+        type: "DELETE",
+        success: function (result) {
+          // show result message
+          if (result.success) {
+            toastr.success(result.message);
+          } else {
+            toastr.error(result.message);
+          }
+
+          // refresh product data
+          loadProductData();
+        },
+      });
+    }
   });
 }
-function onSuccess(result) {
-  // Grid API: Access to Grid API methods
-  let gridApi;
 
-  // Grid Options: Contains all of the grid configurations
+function createActionButtons({ value }) {
+  const gui = document.createElement("div");
+  gui.innerHTML = `
+        <a href="/admin/Product/Edit/${value}" class="btn btn-primary mx-2">
+            <i class="bi bi-pencil-square"></i> Edit
+        </a>
+        <a onClick=deleteProduct('/admin/Product/Delete/${value}') class="btn btn-danger mx-2">
+            <i class="bi bi-trash-fill"></i> Delete
+        </a>
+    `;
+  return gui;
+}
+
+function loadProductData() {
+  $.ajax({
+    url: "/admin/product/getAll/",
+    success: (result) => gridApi.setGridOption("rowData", result),
+  });
+}
+
+// Grid Options: Contains all of the grid configurations
+function getGridOptions(result) {
   const gridOptions = {
     // Data to be displayed
-    rowData: result,
+    rowData: result ?? [],
 
     // Define column types
     columnTypes: {
@@ -54,21 +94,16 @@ function onSuccess(result) {
     paginationPageSizeSelector: [10, 20, 50, 100],
     rowHeight: 48,
   };
+  return gridOptions;
+}
 
-  console.log(gridOptions);
+$(function () {
   // Create Grid: Create new grid within the #myGrid div, using the Grid Options object
-  gridApi = agGrid.createGrid(document.querySelector("#myGrid"), gridOptions);
-}
+  gridApi = agGrid.createGrid(
+    document.querySelector("#myGrid"),
+    getGridOptions([])
+  );
 
-function createActionButtons({ value }) {
-  const gui = document.createElement("div");
-  gui.innerHTML = `
-        <a href="/admin/Product/Edit/${value}" class="btn btn-primary mx-2">
-            <i class="bi bi-pencil-square"></i> Edit
-        </a>
-        <a href="/admin/Product/Delete/${value}" class="btn btn-danger mx-2">
-            <i class="bi bi-trash-fill"></i> Delete
-        </a>
-    `;
-  return gui;
-}
+  // fetch and update table
+  loadProductData();
+});
