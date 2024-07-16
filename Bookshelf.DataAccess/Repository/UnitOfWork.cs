@@ -1,5 +1,5 @@
 ﻿using Bookshelf.DataAccess.Repository.IRepositury;
-using BookshelfWeb.Controllers.Data;
+using BookshelfWeb.DataAccess.Data;
 
 namespace Bookshelf.DataAccess.Repository
 {
@@ -8,6 +8,7 @@ namespace Bookshelf.DataAccess.Repository
         private readonly ApplicationDBContext _dbContext;
         public ICategoryRepository Categories { get; private set; }
         public IProductRepository Product { get; private set; }
+
         public UnitOfWork(ApplicationDBContext dBContext)
         {
             _dbContext = dBContext;
@@ -19,6 +20,5 @@ namespace Bookshelf.DataAccess.Repository
         {
             _dbContext.SaveChanges();
         }
-
     }
 }

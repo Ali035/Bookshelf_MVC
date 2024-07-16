@@ -1,6 +1,6 @@
 ﻿using Bookshelf.DataAccess.Repository.IRepositury;
 using Bookshelf.Models;
-using BookshelfWeb.Controllers.Data;
+using BookshelfWeb.DataAccess.Data;
 
 namespace Bookshelf.DataAccess.Repository
 {
@@ -8,10 +8,10 @@ namespace Bookshelf.DataAccess.Repository
     {
         private readonly ApplicationDBContext _dbContext;
 
-        public ProductRepository(ApplicationDBContext dBContext) : base(dBContext)
+        public ProductRepository(ApplicationDBContext dBContext)
+            : base(dBContext)
         {
             this._dbContext = dBContext;
         }
-
     }
 }

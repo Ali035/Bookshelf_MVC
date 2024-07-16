@@ -1,6 +1,6 @@
 using Bookshelf.DataAccess.Repository;
 using Bookshelf.DataAccess.Repository.IRepositury;
-using BookshelfWeb.Controllers.Data;
+using BookshelfWeb.DataAccess.Data;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);

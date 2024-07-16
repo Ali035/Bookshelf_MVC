@@ -1,6 +1,6 @@
 ﻿using Bookshelf.DataAccess.Repository.IRepositury;
 using Bookshelf.Models;
-using BookshelfWeb.Controllers.Data;
+using BookshelfWeb.DataAccess.Data;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace Bookshelf.DataAccess.Repository

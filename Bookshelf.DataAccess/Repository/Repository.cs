@@ -1,6 +1,6 @@
 ﻿using System.Linq.Expressions;
 using Bookshelf.DataAccess.Repository.IRepositury;
-using BookshelfWeb.Controllers.Data;
+using BookshelfWeb.DataAccess.Data;
 using Microsoft.EntityFrameworkCore;
 
 namespace Bookshelf.DataAccess.Repository
