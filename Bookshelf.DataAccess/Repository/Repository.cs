@@ -1,19 +1,20 @@
-﻿using Bookshelf.DataAccess.Repository.IRepositury;
+﻿using System.Linq.Expressions;
+using Bookshelf.DataAccess.Repository.IRepositury;
 using BookshelfWeb.Controllers.Data;
 using Microsoft.EntityFrameworkCore;
-using System.Linq.Expressions;
 
 namespace Bookshelf.DataAccess.Repository
 {
-    public class Repository<TEntity> : IRepository<TEntity> where TEntity : class
+    public class Repository<TEntity> : IRepository<TEntity>
+        where TEntity : class
     {
         private readonly ApplicationDBContext _dbContext;
         internal DbSet<TEntity> _dbSet;
 
         public Repository(ApplicationDBContext db)
         {
-            this._dbContext = db;
-            this._dbSet = _dbContext.Set<TEntity>();
+            _dbContext = db;
+            _dbSet = _dbContext.Set<TEntity>();
         }
 
         public void Add(TEntity entity)
@@ -36,9 +37,16 @@ namespace Bookshelf.DataAccess.Repository
             return _dbSet.Find(id);
         }
 
-        public TEntity? Get(Expression<Func<TEntity, bool>> filter)
+        public TEntity? Get(Expression<Func<TEntity, bool>> filter, string[]? includeParams = null)
         {
             IQueryable<TEntity> query = _dbSet.Where(filter);
+            if (includeParams != null && includeParams.Length > 0)
+            {
+                query = includeParams.Aggregate(
+                    query,
+                    (current, include) => current.Include(include)
+                );
+            }
             return query.FirstOrDefault();
         }
 
@@ -47,7 +55,10 @@ namespace Bookshelf.DataAccess.Repository
             IQueryable<TEntity> query = _dbSet;
             if (includeParams != null && includeParams.Length > 0)
             {
-                query = includeParams.Aggregate(query, (current, include) => current.Include(include));
+                query = includeParams.Aggregate(
+                    query,
+                    (current, include) => current.Include(include)
+                );
             }
             return query.ToList();
         }

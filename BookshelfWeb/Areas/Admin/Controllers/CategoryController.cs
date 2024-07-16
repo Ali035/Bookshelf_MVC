@@ -1,5 +1,6 @@
 ﻿using Bookshelf.DataAccess.Repository.IRepositury;
 using Bookshelf.Models;
+using Bookshelf.Utility;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BookshelfWeb.Areas.Admin.Controllers
@@ -15,7 +16,7 @@ namespace BookshelfWeb.Areas.Admin.Controllers
         }
 
         // Try not to use nested types unless there's a clear benefit.
-        public enum ActionModeEnum { Create, Update, Delete }
+        // public enum ActionModeEnum { Create, Update, Delete }
         [ViewData]
         public ActionModeEnum ActionMode { get; set; } = ActionModeEnum.Create;
 
@@ -30,6 +31,7 @@ namespace BookshelfWeb.Areas.Admin.Controllers
             ActionMode = ActionModeEnum.Create;
             return View("Create");
         }
+
         [HttpPost]
         public IActionResult Create(Category category)
         {
@@ -45,6 +47,7 @@ namespace BookshelfWeb.Areas.Admin.Controllers
 
             return View("Create");
         }
+
         public IActionResult Edit(int? id)
         {
             if (id == null)
@@ -60,6 +63,7 @@ namespace BookshelfWeb.Areas.Admin.Controllers
             ActionMode = ActionModeEnum.Update;
             return View("Create", category);
         }
+
         [HttpPost]
         public IActionResult Edit(Category category)
         {
@@ -90,12 +94,15 @@ namespace BookshelfWeb.Areas.Admin.Controllers
             ActionMode = ActionModeEnum.Delete;
             return View("Create", category);
         }
+
         [HttpPost, ActionName("Delete")]
         public IActionResult DeletePost(int? id)
         {
-            if (id == null) return NotFound();
+            if (id == null)
+                return NotFound();
             Category? category = _unitOfWork.Categories.Get(id);
-            if (category == null) return NotFound();
+            if (category == null)
+                return NotFound();
 
             _unitOfWork.Categories.Remove(category);
             _unitOfWork.Save();
